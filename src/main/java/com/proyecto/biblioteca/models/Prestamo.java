@@ -3,6 +3,8 @@ package com.proyecto.biblioteca.models;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 public class Prestamo {
     @Id
@@ -11,10 +13,12 @@ public class Prestamo {
 
     @ManyToOne
     @JoinColumn(name = "libro_id", nullable = false) // Relación con el modelo Libro
+    @JsonIgnore
     private Libro libro;
 
     @ManyToOne
     @JoinColumn(name = "persona_id", nullable = false) // Relación con el modelo Persona
+    @JsonIgnore
     private Persona persona;
 
     private LocalDate fechaPrestamo;

@@ -2,6 +2,8 @@ package com.proyecto.biblioteca.models;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -25,6 +27,7 @@ public class Libro {
     private EstadoLibro estado;
 
     @OneToMany(mappedBy = "libro", cascade = CascadeType.ALL)
+    
     private List<Prestamo> prestamos;
 
     public Long getId() {
@@ -75,9 +78,4 @@ public class Libro {
         this.prestamos = prestamos;
     }
 
-}
-
-enum EstadoLibro {
-    DISPONIBLE,
-    PRESTADO
 }
