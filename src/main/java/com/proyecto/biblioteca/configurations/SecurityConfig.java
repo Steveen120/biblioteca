@@ -9,35 +9,44 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-@Configuration
-public class SecurityConfig {
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(csrf -> csrf.disable()) // Deshabilitar CSRF (solo para pruebas; habilitar en producción)
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/usuarios/login", "/api/usuarios/registro", "/error/**").permitAll()
-                        .anyRequest().authenticated() // Proteger todos los demás endpoints
-                ).sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .formLogin(form -> form.disable())
-                .logout(logout -> logout
-                        .logoutUrl("/logout") // URL para logout
-                        .logoutSuccessUrl("/") // Redirección tras el logout
-                        .permitAll());
-        return http.build();
+    @Configuration
+    public class SecurityConfig {
+
+        private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
+        public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
+            this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        }
+
+        @Bean
+        public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+            http
+                    .csrf(csrf -> csrf.disable()) // Deshabilitar CSRF
+                    .authorizeHttpRequests(auth -> auth
+                            .requestMatchers("/api/usuarios/login", "/api/usuarios/registro", "/error/**").permitAll()
+                            .anyRequest().authenticated() // Proteger todos los demás endpoints
+                    ).sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                    .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class) // Añadir
+                                                                                                          // filtro JWT
+                    .formLogin(form -> form.disable())
+                    .logout(logout -> logout
+                            .logoutUrl("/logout")
+                            .logoutSuccessUrl("/")
+                            .permitAll());
+            return http.build();
+        }
+
+        @Bean
+        public PasswordEncoder passwordEncoder() {
+            return new BCryptPasswordEncoder();
+        }
+
+        @Bean
+        public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+                throws Exception {
+            return authenticationConfiguration.getAuthenticationManager();
+        }
     }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(); // Configuración para encriptar contraseñas
-    }
-
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
-            throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
-    }
-
-}

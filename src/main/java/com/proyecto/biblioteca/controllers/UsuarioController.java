@@ -5,6 +5,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import com.proyecto.biblioteca.configurations.JwtService;
 import com.proyecto.biblioteca.dtos.UsuarioDTO;
 import com.proyecto.biblioteca.models.Usuario;
 import com.proyecto.biblioteca.services.UsuarioService;
@@ -18,9 +19,11 @@ public class UsuarioController {
     @Autowired
     private UsuarioService usuarioService;
 
-
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JwtService jwtService;
 
     // Registro de usuarios con el rol especificado en el cuerpo de la solicitud
     @PostMapping("/registro")
@@ -34,15 +37,24 @@ public class UsuarioController {
 
     @PostMapping("/login")
     public UsuarioDTO login(@RequestBody UsuarioDTO usuarioDTO) {
+        // Buscar usuario por email
         Usuario usuario = usuarioService.buscarPorEmail(usuarioDTO.getEmail())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-
+    
+        // Validar la contraseña
         if (!passwordEncoder.matches(usuarioDTO.getPassword(), usuario.getPassword())) {
             throw new RuntimeException("Contraseña incorrecta");
         }
-
-        return new UsuarioDTO(usuario);
+    
+        // Generar el token JWT
+        String token = jwtService.generarToken(usuario.getEmail());
+    
+        // Devolver el DTO con el token incluido
+        UsuarioDTO respuesta = new UsuarioDTO(usuario);
+        respuesta.setToken(token);
+        return respuesta;
     }
+    
 
     // Listar todos los usuarios (solo administrador)
     @GetMapping("/todos")
@@ -65,25 +77,5 @@ public class UsuarioController {
     }
 }
 
-// Clase auxiliar para manejar la solicitud de login
-class LoginRequest {
-    private String email;
-    private String password;
 
-    // Getters y Setters
-    public String getEmail() {
-        return email;
-    }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-}
