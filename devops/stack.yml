@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  wekan:
+    image: biblioteca-app:1
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+    ports:
+      - target: 9098
+        published: 9098
+        protocol: tcp
+        mode: host
+    networks:
+      - biblioteca_net
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.wekan.entrypoints=http"
+        - "traefik.http.routers.wekan.rule=Host(`bibliotecaHCC.byronrm.com`)"
+        - "traefik.http.middlewares.wekan-https-redirect.redirectscheme.scheme=https"
+        - "traefik.http.routers.wekan.middlewares=wekan-https-redirect"
+        - "traefik.http.routers.wekan-secure.entrypoints=https"
+        - "traefik.http.routers.wekan-secure.rule=Host(`bibliotecaHCC.byronrm.com`)"
+        - "traefik.http.routers.wekan-secure.tls=true"
+        - "traefik.http.routers.wekan-secure.tls.certresolver=http"
+        - "traefik.http.routers.wekan-secure.service=wekan"
+        - "traefik.http.services.wekan.loadbalancer.server.port=9098"
+        - "traefik.docker.network=traefik-public"
+
+  dbBiblioteca:
+    image: postgres:15.0-bullseye
+    environment:
+      - TZ=America/Guayaquil
+      - POSTGRES_DB=biblioteca
+      - POSTGRES_PASSWORD=12345
+      - POSTGRES_USER=postgres
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - pg_biblioteca_data:/var/lib/postgresql/data/pgdata
+    networks:
+      - biblioteca_net
+
+volumes:
+  pg_biblioteca_data:
+    external: true
+
+networks:
+  biblioteca_net:
+    external: true
