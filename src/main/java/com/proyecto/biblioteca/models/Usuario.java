@@ -1,5 +1,7 @@
 package com.proyecto.biblioteca.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -20,6 +22,7 @@ public class Usuario {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "rol_id", nullable = false)
+    @JsonManagedReference
     private Rol rol;
 
 }

@@ -1,15 +1,11 @@
 package com.proyecto.biblioteca.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import com.proyecto.biblioteca.dtos.UsuarioDTO;
 import com.proyecto.biblioteca.models.Usuario;
 import com.proyecto.biblioteca.services.UsuarioService;
 
@@ -22,8 +18,9 @@ public class UsuarioController {
     @Autowired
     private UsuarioService usuarioService;
 
+
     @Autowired
-    private AuthenticationManager authenticationManager;
+    private PasswordEncoder passwordEncoder;
 
     // Registro de usuarios con el rol especificado en el cuerpo de la solicitud
     @PostMapping("/registro")
@@ -36,18 +33,15 @@ public class UsuarioController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
-        try {
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            System.out.println("Autenticando usuario: " + loginRequest.getEmail());
-            return ResponseEntity.ok("Autenticación exitosa");
-        } catch (Exception e) {
-            // Captura cualquier excepción que ocurra durante la autenticación
-            System.err.println("Error en el proceso de autenticación: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Autenticación fallida: " + e.getMessage());
+    public UsuarioDTO login(@RequestBody UsuarioDTO usuarioDTO) {
+        Usuario usuario = usuarioService.buscarPorEmail(usuarioDTO.getEmail())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        if (!passwordEncoder.matches(usuarioDTO.getPassword(), usuario.getPassword())) {
+            throw new RuntimeException("Contraseña incorrecta");
         }
+
+        return new UsuarioDTO(usuario);
     }
 
     // Listar todos los usuarios (solo administrador)
