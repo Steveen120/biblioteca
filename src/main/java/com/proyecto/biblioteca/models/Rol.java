@@ -19,7 +19,7 @@ public class Rol {
     private String nombre;
     
     @OneToMany(mappedBy = "rol", fetch = FetchType.LAZY)
-    @JsonBackReference // Rompe el ciclo al ignorar esta relación
+    @JsonBackReference
     private List<Usuario> usuarios;
 
 }

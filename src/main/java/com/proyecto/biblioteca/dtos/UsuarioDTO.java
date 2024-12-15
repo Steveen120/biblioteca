@@ -11,13 +11,13 @@ public class UsuarioDTO {
     private String token;
 
     public UsuarioDTO() {
-        // Constructor sin argumentos
     }
 
     public UsuarioDTO(Usuario usuario) {
         this.id = usuario.getId();
         this.nombre = usuario.getNombre();
         this.email = usuario.getEmail();
+        this.password = usuario.getPassword();
         this.rolNombre = usuario.getRol().getNombre();
     }
 
@@ -60,6 +60,7 @@ public class UsuarioDTO {
     public void setRolNombre(String rolNombre) {
         this.rolNombre = rolNombre;
     }
+
     public String getToken() {
         return token;
     }
@@ -67,5 +68,4 @@ public class UsuarioDTO {
     public void setToken(String token) {
         this.token = token;
     }
-
 }

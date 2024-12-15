@@ -24,17 +24,9 @@ public class UsuarioService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    // Crear un usuario con el rol especificado en el RequestBody
     public Usuario registrarUsuario(Usuario usuario) {
-        // Validar que el rol existe
-        Long rolId = usuario.getRol().getId();
-        Rol rol = rolRepository.findById(rolId)
-                .orElseThrow(() -> new RuntimeException("Rol no encontrado con ID: " + rolId));
-
-        // Asignar el rol y encriptar la contraseña
-        usuario.setRol(rol);
+        Rol rol = usuario.getRol();
         usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
-
         return usuarioRepository.save(usuario);
     }
 

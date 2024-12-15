@@ -6,8 +6,6 @@ public class RolDTO {
     private Long id;
     private String nombre;
 
-    // Getters y Setters
-
     public RolDTO(Rol rol) {
         this.id = rol.getId();
         this.nombre = rol.getNombre();
