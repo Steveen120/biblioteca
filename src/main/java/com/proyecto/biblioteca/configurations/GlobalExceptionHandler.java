@@ -1,4 +1,4 @@
-package com.proyecto.biblioteca.controllers;
+package com.proyecto.biblioteca.configurations;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

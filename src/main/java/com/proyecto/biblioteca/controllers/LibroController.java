@@ -45,20 +45,20 @@ public class LibroController {
     // Editar un libro (solo administrador)
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public Libro editarLibro(@PathVariable Long id, @RequestBody Libro libroActualizado) {
+    public Libro editarLibro(@PathVariable("id") Long id, @RequestBody Libro libroActualizado) {
         return libroService.editarLibro(id, libroActualizado);
     }
 
     // Eliminar un libro (solo administrador)
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public void eliminarLibro(@PathVariable Long id) {
+    public void eliminarLibro(@PathVariable("id") Long id) {
         libroService.eliminarLibro(id);
     }
 
     // Préstamo de un libro
     @PostMapping("/{id}/prestar")
-    public Libro prestarLibro(@PathVariable Long id) {
+    public Libro prestarLibro(@PathVariable("id") Long id) {
         Long usuarioId = obtenerIdUsuarioActual();
         Usuario usuario = usuarioService.buscarPorId(usuarioId)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
@@ -67,7 +67,7 @@ public class LibroController {
 
     // Devolución de un libro
     @PostMapping("/{id}/devolver")
-    public Libro devolverLibro(@PathVariable Long id) {
+    public Libro devolverLibro(@PathVariable("id") Long id) {
         return libroService.devolverLibro(id);
     }
 
