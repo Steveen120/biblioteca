@@ -18,13 +18,13 @@ public class PrestamoController {
 
     @GetMapping("/usuario/{usuarioId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public List<Prestamo> listarPrestamosPorUsuario(@PathVariable Long usuarioId) {
+    public List<Prestamo> listarPrestamosPorUsuario(@PathVariable("usuarioId") Long usuarioId) {
         return prestamoService.listarPrestamosPorUsuario(usuarioId);
     }
 
     @GetMapping("/libro/{libroId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public List<Prestamo> listarHistorialDeLibro(@PathVariable Long libroId) {
+    public List<Prestamo> listarHistorialDeLibro(@PathVariable("libroId") Long libroId) {
         return prestamoService.listarHistorialDeLibro(libroId);
     }
 }

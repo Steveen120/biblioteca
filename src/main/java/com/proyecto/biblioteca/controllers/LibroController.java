@@ -3,7 +3,6 @@ package com.proyecto.biblioteca.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import com.proyecto.biblioteca.models.Libro;
@@ -37,7 +36,6 @@ public class LibroController {
 
     // Listar todos los libros prestados
     @GetMapping("/prestados")
-    @PreAuthorize("hasRole('ADMIN')")
     public List<Libro> listarLibrosPrestados() {
         return libroService.listarLibrosPrestados();
     }
@@ -72,13 +70,19 @@ public class LibroController {
     }
 
     private Long obtenerIdUsuarioActual() {
+        // Obtiene el principal desde el SecurityContext
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (principal instanceof UserDetails) {
-            UserDetails userDetails = (UserDetails) principal;
-            return usuarioService.buscarPorEmail(userDetails.getUsername())
+    
+        // Verifica si el principal es un String (usualmente el nombre de usuario o email)
+        if (principal instanceof String) {
+            String email = (String) principal;
+            return usuarioService.buscarPorEmail(email)
                     .orElseThrow(() -> new RuntimeException("Usuario no encontrado"))
                     .getId();
         }
+    
+        // Lanza excepción si el usuario no está autenticado o el principal no es válido
         throw new RuntimeException("Usuario no autenticado");
     }
+    
 }

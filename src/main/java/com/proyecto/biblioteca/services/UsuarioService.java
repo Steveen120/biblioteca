@@ -25,7 +25,7 @@ public class UsuarioService {
     private PasswordEncoder passwordEncoder;
 
     public Usuario registrarUsuario(Usuario usuario) {
-        Rol rol = usuario.getRol();
+        //Rol rol = usuario.getRol();
         usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
         return usuarioRepository.save(usuario);
     }

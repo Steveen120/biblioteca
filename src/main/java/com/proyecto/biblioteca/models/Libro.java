@@ -1,5 +1,7 @@
 package com.proyecto.biblioteca.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -21,5 +23,6 @@ public class Libro {
 
     @ManyToOne
     @JoinColumn(name = "usuario_id")
+    @JsonIgnore
     private Usuario usuario; 
 }
