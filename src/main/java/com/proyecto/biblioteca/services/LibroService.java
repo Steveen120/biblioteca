@@ -30,11 +30,6 @@ public class LibroService {
         return libroRepository.save(libro);
     }
 
-    // Buscar un libro por ID
-    public Optional<Libro> buscarPorId(Long id) {
-        return libroRepository.findById(id);
-    }
-
     // Editar un libro
     public Libro editarLibro(Long id, Libro libroActualizado) {
         Libro libro = libroRepository.findById(id)
@@ -51,6 +46,11 @@ public class LibroService {
             throw new RuntimeException("Libro no encontrado");
         }
         libroRepository.deleteById(id);
+    }
+
+    // Buscar un libro por ID
+    public Optional<Libro> buscarPorId(Long id) {
+        return libroRepository.findById(id);
     }
 
     // Listar libros disponibles
@@ -103,24 +103,24 @@ public class LibroService {
         // Buscar el libro en la base de datos
         Libro libro = libroRepository.findById(libroId)
                 .orElseThrow(() -> new RuntimeException("Libro no encontrado"));
-    
+
         // Verificar si el libro está prestado
         if (!libro.isPrestado()) {
             throw new RuntimeException("El libro no está prestado");
         }
-    
+
         // Buscar el registro de préstamo activo para este libro
         Prestamo prestamo = prestamoRepository.findByLibroIdAndFechaDevolucionIsNull(libroId)
                 .orElseThrow(() -> new RuntimeException("Préstamo no encontrado"));
-    
+
         // Marcar la fecha de devolución
         prestamo.setFechaDevolucion(LocalDate.now());
         prestamoRepository.save(prestamo);
-    
+
         // Liberar el libro
         libro.setUsuario(null);
         libro.setPrestado(false);
         return libroRepository.save(libro);
     }
-    
+
 }

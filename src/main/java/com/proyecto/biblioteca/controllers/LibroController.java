@@ -28,18 +28,6 @@ public class LibroController {
         return libroService.crearLibro(libro);
     }
 
-    // Listar todos los libros disponibles
-    @GetMapping("/disponibles")
-    public List<Libro> listarLibrosDisponibles() {
-        return libroService.listarLibrosDisponibles();
-    }
-
-    // Listar todos los libros prestados
-    @GetMapping("/prestados")
-    public List<Libro> listarLibrosPrestados() {
-        return libroService.listarLibrosPrestados();
-    }
-
     // Editar un libro (solo administrador)
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
@@ -52,6 +40,18 @@ public class LibroController {
     @PreAuthorize("hasRole('ADMIN')")
     public void eliminarLibro(@PathVariable("id") Long id) {
         libroService.eliminarLibro(id);
+    }
+
+    // Listar todos los libros disponibles
+    @GetMapping("/disponibles")
+    public List<Libro> listarLibrosDisponibles() {
+        return libroService.listarLibrosDisponibles();
+    }
+
+    // Listar todos los libros prestados
+    @GetMapping("/prestados")
+    public List<Libro> listarLibrosPrestados() {
+        return libroService.listarLibrosPrestados();
     }
 
     // Préstamo de un libro
@@ -72,17 +72,18 @@ public class LibroController {
     private Long obtenerIdUsuarioActual() {
         // Obtiene el principal desde el SecurityContext
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    
-        // Verifica si el principal es un String (usualmente el nombre de usuario o email)
+
+        // Verifica si el principal es un String (usualmente el nombre de usuario o
+        // email)
         if (principal instanceof String) {
             String email = (String) principal;
             return usuarioService.buscarPorEmail(email)
                     .orElseThrow(() -> new RuntimeException("Usuario no encontrado"))
                     .getId();
         }
-    
+
         // Lanza excepción si el usuario no está autenticado o el principal no es válido
         throw new RuntimeException("Usuario no autenticado");
     }
-    
+
 }
