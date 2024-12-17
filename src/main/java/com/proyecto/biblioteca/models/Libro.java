@@ -19,10 +19,16 @@ public class Libro {
     @Column(nullable = false)
     private String autor;
 
+    @Column(nullable = true)
+    private String image;
+
+    @Column(nullable = true, columnDefinition = "TEXT")
+    private String descripcion;
+
     private boolean prestado;
 
     @ManyToOne
     @JoinColumn(name = "usuario_id")
     @JsonIgnore
-    private Usuario usuario; 
+    private Usuario usuario;
 }
