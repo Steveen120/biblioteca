@@ -63,11 +63,15 @@ public class LibroController {
         return libroService.prestarLibro(id, usuario);
     }
 
-    // Devolución de un libro
-    @PostMapping("/{id}/devolver")
-    public Libro devolverLibro(@PathVariable("id") Long id) {
-        return libroService.devolverLibro(id);
-    }
+// Devolución de un libro
+@PostMapping("/{id}/devolver")
+public Libro devolverLibro(@PathVariable("id") Long id) {
+    Long usuarioId = obtenerIdUsuarioActual();
+    Usuario usuario = usuarioService.buscarPorId(usuarioId)
+            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+    
+    return libroService.devolverLibro(id, usuario);
+}
 
     private Long obtenerIdUsuarioActual() {
         // Obtiene el principal desde el SecurityContext

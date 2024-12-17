@@ -99,7 +99,7 @@ public class LibroService {
 
     // Método para devolver libro
     @Transactional
-    public Libro devolverLibro(Long libroId) {
+    public Libro devolverLibro(Long libroId, Usuario usuario) {
         // Buscar el libro en la base de datos
         Libro libro = libroRepository.findById(libroId)
                 .orElseThrow(() -> new RuntimeException("Libro no encontrado"));
@@ -112,6 +112,11 @@ public class LibroService {
         // Buscar el registro de préstamo activo para este libro
         Prestamo prestamo = prestamoRepository.findByLibroIdAndFechaDevolucionIsNull(libroId)
                 .orElseThrow(() -> new RuntimeException("Préstamo no encontrado"));
+
+        // Verificar si el usuario que intenta devolver el libro es el que lo prestó
+        if (!prestamo.getUsuario().equals(usuario)) {
+            throw new RuntimeException("Solo el usuario que prestó el libro puede devolverlo");
+        }
 
         // Marcar la fecha de devolución
         prestamo.setFechaDevolucion(LocalDate.now());
